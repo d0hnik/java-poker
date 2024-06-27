@@ -1,26 +1,70 @@
 import Cards.Deck;
+import Cards.Table;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-    public static void main(String[] args) {
+
+    List<Player> players;
+    Deck deck;
+    Table table;
+    Player currentPlayer;
+
+    public Game() {
+        players = new ArrayList<>();
+        deck = new Deck();
+        table = new Table();
+    }
+
+    public void addPlayers(String name) {
+        players.add(new Player(name));
+    }
+
+    public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Do you want to start? (yes/no)");
-        String userResponse = scanner.nextLine().trim().toLowerCase();
 
-        if (userResponse.equals("yes") || userResponse.equals("y")) {
-            Deck deck = new Deck();
-            deck.initializeDeck();
-            System.out.println("Mäng algab! Teeme ettevalmistusi...");
+        System.out.print("How many players are playing? ");
+        int playerCount = scanner.nextInt();
+        scanner.nextLine();
 
-        } else if (userResponse.equals("no") || userResponse.equals("n")) {
-            System.out.println("Mäng lõpetatakse. Head päeva!");
-            System.exit(0);
-        } else {
-            System.out.println("Vale sisestus. Palun vastake 'jah' või 'ei'.");
+
+        for (int i = 0; i < playerCount; i++) {
+            System.out.print("Insert player nr. " + (i + 1) + " name: ");
+            String name = scanner.nextLine();
+            addPlayers(name);
         }
 
-        scanner.close();
+
+        System.out.println("Players are added: ");
+        for (Player player : players) {
+            System.out.println(player.getName());
+        }
+    }
+
+    public void givePlayersHands() {
+        for (Player player : players) {
+            player.addCardToHand(deck.drawCard());
+            player.addCardToHand(deck.drawCard());
+        }
+    }
+
+    public void flop() {
+        // BURNER CARD
+        deck.drawCard();
+
+        for (int i = 0; i < 3; i++) {
+            System.out.println(i);
+            table.addCardToTable(deck.drawCard());
+        }
+    }
+
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.startGame();
+        game.givePlayersHands();
+        game.flop();
     }
 }
