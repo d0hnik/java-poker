@@ -9,6 +9,9 @@ public class Player {
     public int chips;
     public Hand hand;
     public int currentBet = 0;
+    public boolean isSmallBlind = false;
+    public boolean isBigBlind = false;
+    public boolean isFolded = false;
 
     public Player(String name) {
         this.name = name;
@@ -25,18 +28,37 @@ public class Player {
     }
 
     public void fold() {
-        throw new RuntimeException();
+        isFolded = true;
     }
 
-    public void raise() {
-        throw new RuntimeException();
+    public boolean raise(int raisedChips) {
+        if (raisedChips > chips) {
+            System.out.println("RAISE FAILED");
+            return false;
+        }
+        else {
+            System.out.println("RAISE SUCCESS, CHIPS " + chips);
+            currentBet += raisedChips;
+            chips -= raisedChips;
+            System.out.println("NOW CHIPS " + chips);
+            return true;
+        }
     }
 
-    public void call() {
-        throw new RuntimeException();
+    public boolean call(int amountToCall) {
+        if (amountToCall > chips) {
+            System.out.println("CALL FAILED");
+            return false;
+        }
+        System.out.println("CALL SUCCESS, CHIPS " + chips);
+        currentBet += amountToCall;
+        chips -= amountToCall;
+        System.out.println("NOW CHIPS " + chips);
+        return true;
     }
 
     public String getName() {
         return this.name;
     }
+
 }
