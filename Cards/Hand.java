@@ -14,10 +14,6 @@ public class Hand {
         cards.add(card);
     }
 
-    public HandType getBestCombination() {
-        throw new RuntimeException();
-    }
-
     public List<Card> getCards() {
         return cards;
     }

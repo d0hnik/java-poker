@@ -1,4 +1,6 @@
 import Cards.Deck;
+import Cards.HandEvaluator;
+import Cards.HandType;
 import Cards.Table;
 
 import java.util.ArrayList;
@@ -11,11 +13,13 @@ public class Game {
     Deck deck;
     Table table;
     Player currentPlayer;
+    HandEvaluator handEvaluator;
 
     public Game() {
         players = new ArrayList<>();
         deck = new Deck();
         table = new Table();
+        handEvaluator = new HandEvaluator();
     }
 
     public void addPlayers(String name) {
@@ -25,18 +29,15 @@ public class Game {
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
-
         System.out.print("How many players are playing? ");
         int playerCount = scanner.nextInt();
         scanner.nextLine();
-
 
         for (int i = 0; i < playerCount; i++) {
             System.out.print("Insert player nr. " + (i + 1) + " name: ");
             String name = scanner.nextLine();
             addPlayers(name);
         }
-
 
         System.out.println("Players are added: ");
         for (Player player : players) {
@@ -66,11 +67,13 @@ public class Game {
     public void playersTurn() {
         for (Player player : players) {
             Scanner scanner = new Scanner(System.in);
+            HandEvaluator handEvaluator = new HandEvaluator();
             System.out.println("TABLE CARDS ARE: ");
             System.out.println(table.getTableCards());
             System.out.println("------------------------");
             System.out.println("YOUR CARDS ARE");
             System.out.println(player.getHand());
+            System.out.println(handEvaluator.evaluateHand(player.hand, table) + " Is your current best combination");
             System.out.println(player.getName() + " what do you want to do? (raise, call, fold) ?");
             String userOutput = scanner.nextLine();
         }
@@ -80,6 +83,13 @@ public class Game {
         // BURNER CARD
         deck.drawCard();
         table.addCardToTable(deck.drawCard());
+    }
+
+    public void evaluateHands() {
+        for (Player player : players) {
+            HandType handType = handEvaluator.evaluateHand(player.hand, table);
+            System.out.println(player.getName() + " has a " + handType);
+        }
     }
 
     public static void main(String[] args) {
@@ -92,5 +102,6 @@ public class Game {
         game.playersTurn();
         game.flipOneMoreCard();
         game.playersTurn();
+        game.evaluateHands(); // Käte hindamine
     }
 }

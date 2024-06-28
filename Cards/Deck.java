@@ -7,9 +7,6 @@ import java.util.List;
 public class Deck {
 
     public List<Card> CardDeck;
-    public enum CardValue { S2, S3, S4, S5, S6, S7, S8, S9, S10, J, Q, K, A }
-
-    public enum CardSuit { C, D, H, S }
 
     public Deck() {
         CardDeck = new ArrayList<>();
@@ -30,8 +27,8 @@ public class Deck {
     }
 
     public Card drawCard() {
-        Card card = CardDeck.get(0);
-        CardDeck.remove(0);
+        Card card = CardDeck.getFirst();
+        CardDeck.removeFirst();
         return card;
     }
 }

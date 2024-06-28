@@ -16,7 +16,11 @@ public class Table {
         tableCards.add(card);
     }
 
-    public String getTableCards() {
+    public String getTableCardsAsString() {
         return tableCards.toString();
+    }
+
+    public List<Card> getTableCards() {
+        return tableCards;
     }
 }
