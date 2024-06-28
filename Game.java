@@ -42,6 +42,9 @@ public class Game {
         for (Player player : players) {
             System.out.println(player.getName());
         }
+
+        System.out.println("THE GAME IS STARTING....");
+        System.out.println("------------------------------------------------------");
     }
 
     public void givePlayersHands() {
@@ -56,9 +59,27 @@ public class Game {
         deck.drawCard();
 
         for (int i = 0; i < 3; i++) {
-            System.out.println(i);
             table.addCardToTable(deck.drawCard());
         }
+    }
+
+    public void playersTurn() {
+        for (Player player : players) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("TABLE CARDS ARE: ");
+            System.out.println(table.getTableCards());
+            System.out.println("------------------------");
+            System.out.println("YOUR CARDS ARE");
+            System.out.println(player.getHand());
+            System.out.println(player.getName() + " what do you want to do? (raise, call, fold) ?");
+            String userOutput = scanner.nextLine();
+        }
+    }
+
+    public void flipOneMoreCard() {
+        // BURNER CARD
+        deck.drawCard();
+        table.addCardToTable(deck.drawCard());
     }
 
     public static void main(String[] args) {
@@ -66,5 +87,10 @@ public class Game {
         game.startGame();
         game.givePlayersHands();
         game.flop();
+        game.playersTurn();
+        game.flipOneMoreCard();
+        game.playersTurn();
+        game.flipOneMoreCard();
+        game.playersTurn();
     }
 }
