@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Table {
 
-    public int allBets = 0;
     public List<Card> tableCards;
 
     public Table() {
@@ -14,10 +13,6 @@ public class Table {
 
     public void addCardToTable(Card card) {
         tableCards.add(card);
-    }
-
-    public String getTableCardsAsString() {
-        return tableCards.toString();
     }
 
     public List<Card> getTableCards() {
