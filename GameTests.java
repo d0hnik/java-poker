@@ -17,3 +17,4 @@ public class GameTests {
         assertThat(game.players.size(), is(2));
     }
 }
+

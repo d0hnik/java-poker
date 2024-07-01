@@ -287,3 +287,4 @@ public class Game {
         game.evaluateHands(); // Käte hindamine
     }
 }
+
