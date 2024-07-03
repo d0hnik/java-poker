@@ -70,17 +70,26 @@ public class HandEvaluator {
             return false;
         }
         else {
-            Set<String> handSuits = new HashSet<>();
+            HashMap<Card.CardSuit, Integer> suits = new HashMap<>();
             for (Card card : cards) {
-                handSuits.add(String.valueOf(card.getSuit()));
+                suits.put(card.getSuit(), suits.getOrDefault(card.getSuit(), 0) + 1);
             }
-            return handSuits.size() == 1;
+            for (Integer count : suits.values()) {
+                if (count >= 5) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     private boolean isStraight(List<Card> cards) {
         Set<Integer> uniqueValues = new HashSet<>();
         for (Card card : cards) {
+            // ACE default ordinal is 12 (so the highest card), but it could be the lowest card as well, so add -1.
+            if (card.getValue().equals(Card.CardValue.A)) {
+                uniqueValues.add(-1);
+            }
             uniqueValues.add(card.getOrdinal());
         }
         List<Integer> sortedValues = new ArrayList<>(uniqueValues);

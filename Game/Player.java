@@ -1,9 +1,11 @@
+package Game;
+
 import Cards.*;
 import Cards.Hand;
 
 public class Player {
 
-    public String name;
+    private final String name;
     public int chips;
     public Hand hand;
     public int currentBet = 0;
@@ -20,8 +22,8 @@ public class Player {
         hand.addCardToHand(card);
     }
 
-    public String getHand() {
-        return hand.toString();
+    public Hand getHand() {
+        return hand;
     }
 
     public void fold() {
@@ -31,6 +33,10 @@ public class Player {
     public boolean raise(int raisedChips) {
         if (raisedChips > chips) {
             System.out.println("You do not have enough chips to raise.");
+            return false;
+        }
+        else if (raisedChips <= 0) {
+            System.out.println("Raised amount should be bigger than 0.");
             return false;
         }
         else {
@@ -50,11 +56,25 @@ public class Player {
         return true;
     }
 
+    public void placeBlind(int blind) {
+        if (blind > chips) {
+            System.out.println("You do not have enough chips to call blind. You folded.");
+            isFolded = true;
+            return;
+        }
+        chips -= blind;
+        currentBet += blind;
+    }
+
     public String getName() {
         return this.name;
     }
 
     public HandType getBestCurrentCombination() {
         return bestCurrentCombination;
+    }
+
+    public void deleteHand() {
+        hand = new Hand();
     }
 }

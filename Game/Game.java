@@ -1,4 +1,7 @@
+package Game;
+
 import Cards.Deck;
+import Cards.HandComparator;
 import Cards.HandEvaluator;
 import Cards.Table;
 
@@ -8,10 +11,19 @@ import java.util.Scanner;
 
 public class Game {
 
-    List<Player> players;
-    Deck deck;
-    Table table;
+    public List<Player> players;
+    public Deck deck;
+    public Table table;
     HandEvaluator handEvaluator;
+    private final Scanner scanner = new Scanner(System.in);
+
+    // BLINDS
+    int smallBlindIndex = 0;
+    int bigBlindIndex = 1;
+    int smallBlindAmount = 10;
+    int bigBlindAmount = 20;
+
+    // CHIPS
     int totalBets = 0;
     int lastBet = 0;
     Player lastRaiser = null;
@@ -41,11 +53,23 @@ public class Game {
         return 0;
     }
 
+    public void setupBlinds() {
+        players.get(smallBlindIndex).placeBlind(smallBlindAmount);
+        players.get(bigBlindIndex).placeBlind(bigBlindAmount);
+        totalBets += smallBlindAmount + bigBlindAmount;
+        lastRaiser = players.get(bigBlindIndex);
+
+    }
+
+    public void rotateBlinds() {
+        smallBlindIndex = (smallBlindIndex + 1) % players.size();
+        bigBlindIndex = (bigBlindIndex + 1) % players.size();
+    }
+
     /**
-     * Player sets amount of players and sets their names.
+     * Game.Player sets amount of players and sets their names.
      */
     public void startGame() {
-        Scanner scanner = new Scanner(System.in);
         int playerCount = getPlayerCount(scanner);
         for (int i = 1; i <= playerCount; i++) {
             getValidPlayerName(scanner, i);
@@ -96,6 +120,9 @@ public class Game {
         }
     }
 
+    /**
+     * Burns a card and adds 3 cards to table (flop).
+     */
     public void flop() {
         // BURNER CARD
         deck.drawCard();
@@ -107,34 +134,28 @@ public class Game {
 
     public void playersTurn() {
         boolean roundCompleted = false;
+        boolean allPlayersResponded = false;
         while (!roundCompleted) {
             roundCompleted = true;
             for (Player player : players) {
                 if (player.isFolded) {
                     continue;
                 }
-                if (lastRaiser != null && lastRaiser.equals(player)) {
+                if (lastRaiser != null && lastRaiser.equals(player) && allPlayersResponded) {
                     break;
                 }
-                Scanner scanner = new Scanner(System.in);
                 String userOutput = getPlayerMove(player);
 
                 if (userOutput.equalsIgnoreCase("fold")) {
                     player.fold();
-                }
-
-
-                else if (userOutput.equalsIgnoreCase("call")) {
+                } else if (userOutput.equalsIgnoreCase("call")) {
                     if (!player.call(lastBet)) {
                         System.out.println("You dont have enough money to call!");
                         player.fold();
                         continue;
                     }
                     totalBets += lastBet;
-                }
-
-
-                else if (userOutput.equalsIgnoreCase("raise")) {
+                } else if (userOutput.equalsIgnoreCase("raise")) {
                     int raisedChips;
                     do {
                         System.out.println(player.getName() + " , how much do you want to raise?");
@@ -147,7 +168,9 @@ public class Game {
                     roundCompleted = false;
                 }
             }
+            allPlayersResponded = true;
         }
+
         lastBet = 0;
         lastRaiser = null;
     }
@@ -157,23 +180,25 @@ public class Game {
      * Returns player next move. Either call, raise or fold.
      */
     public String getPlayerMove(Player player) {
-        Scanner scanner = new Scanner(System.in);
-        HandEvaluator handEvaluator = new HandEvaluator();
         player.bestCurrentCombination = handEvaluator.evaluateHand(player.hand, table);
+        System.out.println("------------------------");
         System.out.println("TABLE CARDS ARE: ");
         System.out.println(table.getTableCards());
         System.out.println("------------------------");
         System.out.println("YOUR CARDS ARE");
         System.out.println(player.getHand());
         System.out.println(player.getBestCurrentCombination() + " Is your current best combination");
-        System.out.println(lastBet + " currently last bet is");
+        System.out.println("------------------------");
+        System.out.println("Last bet was for " + lastBet + " chips.");
+        System.out.println(player.getName() + " you have currently " + player.chips + " chips");
         String userOutput;
 
         // If user typed incorrectly, ask again.
         do {
             System.out.println(player.getName() + " what do you want to do? (raise, call, fold) ?");
             userOutput = scanner.nextLine();
-        } while (!userOutput.matches("(?i)(raise|call|fold)"));
+        } while (!userOutput.equalsIgnoreCase("raise") && !userOutput.equalsIgnoreCase("call") && !userOutput.equalsIgnoreCase("fold"));
+
         return userOutput;
     }
 
@@ -211,16 +236,15 @@ public class Game {
         else {
             System.out.println("DRAW");
             givePlayersMoneyBackIfDraw();
-            cleanPlayersCurrentBets();
         }
     }
 
 
     /**
      * Determine who won the game.
-     * Return the winner as Player.
+     * Return the winner as Player class.
      */
-    private Player getWinner() {
+    public Player getWinner() {
         Player winner = null;
 
         for (Player player : players) {
@@ -235,11 +259,18 @@ public class Game {
                     if (comparison > 0) {
                         winner = player;
                     }
-
-                    // TODO: FIX THIS. FOR EXAMPLE IF THERE IS 3 PLAYERS, FIRST TWO HAVE SAME HAND, THEN THIRD INSTANTLY BECOMES WINNER.
-                    // TODO: ALSO ADD HAND COMPARISON.
                     else if (comparison == 0) {
-                        winner = null;
+                        int comparedHands = HandComparator.compareHands(winner, player, table);
+                        if (comparedHands == 0) {
+                            winner = null;
+                            givePlayersMoneyBackIfDraw();
+                        }
+                        else if (comparedHands > 0) {
+                            continue;
+                        }
+                        else {
+                            winner = player;
+                        }
                     }
                 }
             }
@@ -265,26 +296,53 @@ public class Game {
         }
     }
 
-    /**
-     * Clean all players current bets after the round has ended.
-     */
-    private void cleanPlayersCurrentBets() {
+
+    private void afterRoundProcedure() {
+        // Clean players bets after the round has ended.
         for (Player player : players) {
             player.currentBet = 0;
+            player.deleteHand();
         }
+        rotateBlinds();
+    }
+
+    private void prepareForNextRound() {
+        afterRoundProcedure();
+        deck = new Deck();
+        table = new Table();
+        lastRaiser = null;
+        totalBets = 0;
+        lastBet = 0;
+
     }
 
     public static void main(String[] args) {
         Game game = new Game();
         game.startGame();
-        game.givePlayersHands();
-        game.flop();
-        game.playersTurn();
-        game.flipOneMoreCard();
-        game.playersTurn();
-        game.flipOneMoreCard();
-        game.playersTurn();
-        game.evaluateHands(); // Käte hindamine
+
+        Scanner scanner = new Scanner(System.in);
+        boolean continuePlaying = true;
+
+        while (continuePlaying) {
+            game.setupBlinds();
+            game.givePlayersHands();
+            game.flop();
+            game.playersTurn();
+            game.flipOneMoreCard();
+            game.playersTurn();
+            game.flipOneMoreCard();
+            game.playersTurn();
+            game.evaluateHands(); // Käte hindamine
+            game.prepareForNextRound();
+        }
+
+        System.out.println("Do you want to play another round? (yes/no): ");
+        String userInput = scanner.nextLine();
+
+        if (userInput.equalsIgnoreCase("no")) {
+            continuePlaying = false;
+        }
+        scanner.close();
     }
 }
 
