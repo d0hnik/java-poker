@@ -24,8 +24,8 @@ public class HandComparator {
             List<Card> allCardsPlayer2 = new ArrayList<>(player2.getHand().getCards());
             allCardsPlayer2.addAll(table.getTableCards());
             
-            Collections.sort(allCardsPlayer1, Collections.reverseOrder());
-            Collections.sort(allCardsPlayer2, Collections.reverseOrder());
+            allCardsPlayer1.sort(Collections.reverseOrder());
+            allCardsPlayer2.sort(Collections.reverseOrder());
 
             for (int i = 0; i < allCardsPlayer1.size(); i++) {
                 int compare = allCardsPlayer1.get(i).compareTo(allCardsPlayer2.get(i));

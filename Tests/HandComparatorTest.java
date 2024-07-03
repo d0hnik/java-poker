@@ -76,7 +76,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S10, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S10, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 
     @Test
@@ -156,7 +156,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S10, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 
     @Test
@@ -176,7 +176,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S10, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 
     @Test
@@ -216,7 +216,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S9, Card.CardSuit.H));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 
     @Test
@@ -237,7 +237,7 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S9, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
     @Test
     public void testFourOfAKindButFirstPlayerHasBetterCard() {
@@ -257,6 +257,6 @@ public class HandComparatorTest {
         game.table.addCardToTable(new Card(Card.CardValue.S9, Card.CardSuit.D));
 
         game.evaluateHands();
-        assertThat(game.getWinner(), is(game.players.get(0)));
+        assertThat(game.getWinner(), is(game.players.getFirst()));
     }
 }
