@@ -58,6 +58,7 @@ public class Game {
         players.get(bigBlindIndex).placeBlind(bigBlindAmount);
         totalBets += smallBlindAmount + bigBlindAmount;
         lastRaiser = players.get(bigBlindIndex);
+        lastBet = bigBlindAmount;
 
     }
 
@@ -265,10 +266,7 @@ public class Game {
                             winner = null;
                             givePlayersMoneyBackIfDraw();
                         }
-                        else if (comparedHands > 0) {
-                            continue;
-                        }
-                        else {
+                        else if (comparedHands < 0) {
                             winner = player;
                         }
                     }
@@ -334,15 +332,15 @@ public class Game {
             game.playersTurn();
             game.evaluateHands(); // Käte hindamine
             game.prepareForNextRound();
-        }
 
-        System.out.println("Do you want to play another round? (yes/no): ");
-        String userInput = scanner.nextLine();
 
-        if (userInput.equalsIgnoreCase("no")) {
-            continuePlaying = false;
+            System.out.println("Do you want to play another round? (yes/no): ");
+            String userInput = scanner.nextLine();
+
+            if (userInput.equalsIgnoreCase("no")) {
+                continuePlaying = false;
+            }
         }
-        scanner.close();
     }
 }
 
